@@ -590,7 +590,7 @@ const onSubmit = async (data) => {
         )}
       </div>
 
-{(serviceType === "Paid" || serviceType === "Both") && (
+{(serviceType === "Paid" || serviceType === "Both" || serviceType === "Free") && (
         <div>
         <label className="block font-medium text-sm w-full text-start ">
           Enter Your Payout Method
@@ -603,10 +603,7 @@ const onSubmit = async (data) => {
             className="w-full  bg-[#868674] outline-none cursor-pointer rounded py-1"
           >
             <option value="">-- Select Method --</option>
-            <option  value="upi">UPI</option>
             <option value="bank">Bank Transfer</option>
-            <option value="paypal">PayPal</option>
-            <option value="other">Other</option>
           </select>
         </div>
         {errors.payoutMethod && (
@@ -614,24 +611,6 @@ const onSubmit = async (data) => {
         )}
       </div>
 )}
-
-      {payoutMethod === "upi" && (
-        <div className="mt-2">
-          <label className="block font-medium text-sm w-full text-start ">
-            Enter UPI ID
-          </label>
-          <div className="flex items-center bg-[#868674] rounded-lg px-4 py-3 border border-[#1e2a48] focus-within:border-blue-500 ">
-            <input
-              {...register("upiId", { required: true })}
-              className="w-full  bg-[#868674] outline-none   rounded py-2"
-              placeholder="yourname@upi"
-            />
-          </div>
-          {errors.upiId && (
-            <p className="text-red-500 text-sm">UPI ID is required.</p>
-          )}
-        </div>
-      )}
 
   {payoutMethod === "bank" && (
   <>
@@ -668,43 +647,6 @@ const onSubmit = async (data) => {
     </div>
   </>
 )}
-
-
-      {payoutMethod === "paypal" && (
-        <div className="mt-2 ">
-          <label className="block font-medium text-sm w-full text-start ">
-            PayPal Email
-          </label>
-          <div className=" bg-[#868674] rounded-lg px-4 py-3 border border-[#1e2a48] focus-within:border-blue-500  ">
-            <input
-              type="email"
-              {...register("paypalEmail", { required: true })}
-              className="w-full outline-none  bg-transparent rounded"
-              placeholder="you@example.com"
-            />
-          </div>
-          {errors.paypalEmail && (
-            <p className="text-red-500 text-sm">PayPal Email is required.</p>
-          )}
-        </div>
-      )}
-  {payoutMethod === "other" && (
-        <div className="mt-2">
-          <label className="block font-medium text-sm w-full text-start ">
-            Enter Your Payout details
-          </label>
-          <div className="flex items-center bg-[#868674] rounded-lg px-4 py-3 border border-[#1e2a48] focus-within:border-blue-500 ">
-            <input
-              {...register("otherPayout", { required: true })}
-              className="w-full  bg-[#868674] outline-none   rounded py-2"
-              placeholder="Enter Your Payout details"
-            />
-          </div>
-          {errors.upiId && (
-            <p className="text-red-500 text-sm">Payout details is required.</p>
-          )}
-        </div>
-      )}
       
                 {/* Password */}
                 <div>

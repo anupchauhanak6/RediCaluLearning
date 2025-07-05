@@ -7,6 +7,7 @@ import {
 } from "../models/user.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/emailSender.js";
 
 
 // --------------------------User-registration-------------------------------------------
@@ -103,7 +104,7 @@ export async function registerLearnerController(request, response) {
 
 export async function registerEducatorController(request, response) { try { const { name, email, password, role, subrole, country, language, phone, dob, address, bio, experience, subjects, serviceType, sessionfee, payoutMethod, upiId, bankAccount, ifscCode, paypalEmail, otherPayout, documentUrl, videoUrl, profileUrl, terms1, terms2, terms3, terms4, terms5, } = request.body;
 
-console.log("Received payload:", request.body);
+// console.log("Received payload:", request.body);
 
 if (!name || !email || !password || !role || !subrole || !country || !language || !bio || !serviceType) {
   return response.status(400).json({
@@ -217,13 +218,109 @@ const newUser = new EducatorUserModel({
 
 const savedUser = await newUser.save();
 const { password: _, ...userWithoutPassword } = savedUser.toObject();
+const subject = "Welcome to Our Educator Platform!";
+const html = `
+<div style="margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;">
+    <div style="min-height: 100vh; padding: 40px 20px; display: flex; align-items: center; justify-content: center;">
+        <div style="max-width: 600px; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); overflow: hidden; position: relative;">
+            
+            <!-- Header with gradient -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 40px 60px; text-align: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"50\" cy=\"50\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.1\"/><circle cx=\"25\" cy=\"25\" r=\"0.5\" fill=\"%23ffffff\" opacity=\"0.05\"/><circle cx=\"75\" cy=\"75\" r=\"0.8\" fill=\"%23ffffff\" opacity=\"0.08\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg></div>
+                
+                <div style="position: relative; z-index: 1;">
+                    <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.3);">
+                        <span style="font-size: 32px;">🎓</span>
+                    </div>
+                    <h1 style="color: white; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">Welcome to Our Platform!</h1>
+                    <p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; margin: 12px 0 0; font-weight: 400;">Your educator journey begins here</p>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <div style="padding: 40px; margin-top: -20px; position: relative; z-index: 2;">
+                <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); margin-bottom: 32px;">
+                    <h2 style="color: #2d3748; font-size: 24px; font-weight: 600; margin: 0 0 20px; display: flex; align-items: center; gap: 12px;">
+                        <span style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🎉</span>
+                        Congratulations, ${name}!
+                    </h2>
+                    
+                    <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                        You have successfully signed up as an educator on our platform. We're excited to have you join our community of passionate educators!
+                    </p>
+                    
+                    <div style="background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%); border-radius: 12px; padding: 24px; margin: 24px 0; border-left: 4px solid #667eea;">
+                        <h3 style="color: #2d3748; font-size: 18px; font-weight: 600; margin: 0 0 12px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">⏳</span>
+                            What's Next?
+                        </h3>
+                        <p style="color: #4a5568; font-size: 15px; line-height: 1.5; margin: 0 0 16px;">
+                            Our team is currently reviewing your documents and verifying your credentials. This process typically takes 1-2 business days.
+                        </p>
+                        <p style="color: #4a5568; font-size: 15px; line-height: 1.5; margin: 0;">
+                            Once your profile is approved, you'll receive an email notification and can start using all platform features.
+                        </p>
+                    </div>
+                    
+                    <div style="background: rgba(102, 126, 234, 0.05); border-radius: 12px; padding: 20px; margin: 24px 0; border: 1px solid rgba(102, 126, 234, 0.1);">
+                        <p style="color: #4a5568; font-size: 14px; line-height: 1.5; margin: 0; display: flex; align-items: flex-start; gap: 8px;">
+                            <span style="color: #667eea; font-size: 16px; margin-top: 2px;">💡</span>
+                            <span><strong>Pro tip:</strong> While you wait, explore our educator resources and community guidelines in your welcome packet.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="https://radical-unlearning.com/dashboard/educator" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 16px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; margin: 0 8px;">
+                        Visit Dashboard
+                    </a>
+                    <a href="https://radical-unlearning.com/dashboard/educator" style="display: inline-block; background: white; color: #667eea; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 16px; border: 2px solid #667eea; transition: all 0.3s ease; margin: 0 8px;">
+                        Download Resources
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="background: #f8fafc; padding: 32px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                <div style="margin-bottom: 20px;">
+                    <p style="color: #718096; font-size: 14px; margin: 0 0 8px;">Need help? We're here for you!</p>
+                    <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+                        <a href="#" style="color: #667eea; text-decoration: none; font-size: 14px; font-weight: 500;">📧 Support Center</a>
+                        <a href="https://radical-unlearning.com/dashboard/educator" style="color: #667eea; text-decoration: none; font-size: 14px; font-weight: 500;">💬 Live Chat</a>
+                        <a href="https://radical-unlearning.com/dashboard/educator" style="color: #667eea; text-decoration: none; font-size: 14px; font-weight: 500;">📚 Help Docs</a>
+                    </div>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+                
+                <p style="color: #a0aec0; font-size: 13px; margin: 0 0 8px;">
+                    Best regards,<br>
+                    <strong style="color: #4a5568;">Radical Unlearning Team</strong>
+                </p>
+                
+                <p style="color: #cbd5e0; font-size: 12px; margin: 16px 0 0;">
+                    © 2025 Radical Unlearning. All rights reserved.<br>
+                    <a href="https://radical-unlearning.com/dashboard/educator" style="color: #a0aec0; text-decoration: none;">Unsubscribe</a> | 
+                    <a href="https://radical-unlearning.com/dashboard/educator" style="color: #a0aec0; text-decoration: none;">Privacy Policy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
 
+
+`;
+
+await sendEmail( normalizedEmail , subject , html );
 return response.status(201).json({
   message: "User registered successfully",
   success: true,
   error: false,
   data: userWithoutPassword,
 });
+
+
 
 } catch (error) { console.error("Registration error:", error); return response.status(500).json({ message: error.message || "Internal server error", error: true, success: false, }); } }
 

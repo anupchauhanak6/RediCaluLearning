@@ -18,6 +18,6 @@ import { Provider } from 'react-redux'
 import './index.css'
 createRoot(document.getElementById('root')).render(
 <Provider store={store}>
-<RouterProvider router={routes} /> {/* Provides the router configuration */} 
+<RouterProvider router={routes} /> 
 </Provider>
 )

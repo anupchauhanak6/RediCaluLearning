@@ -727,6 +727,12 @@ const getWithdrawelRequests = async() =>{
             scope="col"
             className="px-3 py-3 text-left text-xs font-medium text-black  uppercase tracking-wider w-1/5 break-words"
           >
+            Role
+          </th>
+          <th
+            scope="col"
+            className="px-3 py-3 text-left text-xs font-medium text-black  uppercase tracking-wider w-1/5 break-words"
+          >
             Request Date
           </th>
           <th
@@ -754,6 +760,9 @@ const getWithdrawelRequests = async() =>{
                 {educator.email}
               </td>
               <td className="px-3 py-4 text-sm font-medium text-gray-900  break-words  text-start">
+                {educator.role}
+              </td>
+              <td className="px-3 py-4 text-sm font-medium text-gray-900  break-words  text-start">
                 {new Date(educator.createdAt).toLocaleDateString()}
               </td>
               <td className="px-3 py-4 whitespace-nowrap text-sm">
@@ -774,7 +783,7 @@ const getWithdrawelRequests = async() =>{
               </td>
               <td
                 onClick={() => {
-                  fetchEducatorsDetailedData(educator.email);
+                  fetchEducatorsDetailedData(educator.email , educator.role);
                 }}
                 className="px-3 py-4 text-sm  text-green-500 cursor-pointer break-words  text-start"
               >

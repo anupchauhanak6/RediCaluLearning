@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const sendEmail = async (to, subject, text) => {
+export const sendEmail = async (to, subject, html = "") => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
-      secure: false,
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -18,9 +18,14 @@ export const sendEmail = async (to, subject, text) => {
       },
     });
 
-    const mailOptions = { from: process.env.SMTP_USER, to, subject, text };
-    const info = await transporter.sendMail(mailOptions);
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to,
+      subject,
+      html, // preferred content
+    };
 
+    const info = await transporter.sendMail(mailOptions);
     console.log("Email sent:", info.response);
     return { success: true, message: "Email sent successfully" };
   } catch (error) {
@@ -28,3 +33,4 @@ export const sendEmail = async (to, subject, text) => {
     return { success: false, message: error.message };
   }
 };
+
