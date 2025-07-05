@@ -33,4 +33,8 @@ export const sendEmail = async (to, subject, html = "") => {
     return { success: false, message: error.message };
   }
 };
+// const name = 'amar jha'
+// const email = 'amarjha880@gmail.com'
 
+
+// await sendEmail(email, subject, html);
