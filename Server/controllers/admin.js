@@ -151,75 +151,75 @@ export const approveEducator = async (req, res) => {
 
     let stripeAccountId;
 
-    if (educator.serviceType === "Paid" && !educator.stripeAccountId) {
-      // 1. Create Stripe Connect Custom Account
-      const account = await stripe.accounts.create({
-        type: "custom",
-        country: educator.country,
-        email: educator.email,
-        business_type: "individual",
-        individual: {
-          first_name: educator.name.split(" ")[0] || educator.name,
-          last_name: educator.name.split(" ")[1] || "LastName",
-          email: educator.email,
-          phone: educator.phone,
-          dob: {
-            day: educator.dob?.day,
-            month: educator.dob?.month,
-            year: educator.dob?.year,
-          },
-          address: {
-            line1: educator.address?.line1,
-            city: educator.address?.city,
-            postal_code: educator.address?.postal_code,
-            country: educator.address?.country,
-          },
-        },
-        capabilities: {
-          transfers: { requested: true },
-        },
-        tos_acceptance: {
-          date: Math.floor(Date.now() / 1000),
-          ip: ipAddress,
-        },
-      });
+    // if (educator.serviceType === "Paid" && !educator.stripeAccountId) {
+    //   // 1. Create Stripe Connect Custom Account
+    //   const account = await stripe.accounts.create({
+    //     type: "custom",
+    //     country: educator.country,
+    //     email: educator.email,
+    //     business_type: "individual",
+    //     individual: {
+    //       first_name: educator.name.split(" ")[0] || educator.name,
+    //       last_name: educator.name.split(" ")[1] || "LastName",
+    //       email: educator.email,
+    //       phone: educator.phone,
+    //       dob: {
+    //         day: educator.dob?.day,
+    //         month: educator.dob?.month,
+    //         year: educator.dob?.year,
+    //       },
+    //       address: {
+    //         line1: educator.address?.line1,
+    //         city: educator.address?.city,
+    //         postal_code: educator.address?.postal_code,
+    //         country: educator.address?.country,
+    //       },
+    //     },
+    //     capabilities: {
+    //       transfers: { requested: true },
+    //     },
+    //     tos_acceptance: {
+    //       date: Math.floor(Date.now() / 1000),
+    //       ip: ipAddress,
+    //     },
+    //   });
 
-      // console.log("✅ Stripe account created:", account.id);
-      stripeAccountId = account.id;
+    //   // console.log("✅ Stripe account created:", account.id);
+    //   stripeAccountId = account.id;
 
-      // 2. Create Bank Token
-      const bankToken = await stripe.tokens.create({
-        bank_account: {
-          country: "GB",
-          currency: "GBP",
-          account_holder_name: educator.name,
-          account_holder_type: "individual",
-          routing_number: educator.ifscCode,
-          account_number: educator.bankAccount,
-        },
-      });
+    //   // 2. Create Bank Token
+    //   const bankToken = await stripe.tokens.create({
+    //     bank_account: {
+    //       country: "GB",
+    //       currency: "GBP",
+    //       account_holder_name: educator.name,
+    //       account_holder_type: "individual",
+    //       routing_number: educator.ifscCode,
+    //       account_number: educator.bankAccount,
+    //     },
+    //   });
 
-      // console.log("✅ Bank token created:", bankToken.id);
+    //   // console.log("✅ Bank token created:", bankToken.id);
 
-      // 3. Attach external bank account
-      await stripe.accounts.createExternalAccount(account.id, {
-        external_account: bankToken.id,
-      });
+    //   // 3. Attach external bank account
+    //   await stripe.accounts.createExternalAccount(account.id, {
+    //     external_account: bankToken.id,
+    //   });
 
-      // 4. Save Stripe account ID
-      educator.stripeAccountId = account.id;
-      await educator.save();
-    } else {
-      stripeAccountId = educator.stripeAccountId;
-    }
-
+    //   // 4. Save Stripe account ID
+    //   educator.stripeAccountId = account.id;
+    //   await educator.save();
+    // } else {
+    //   stripeAccountId = educator.stripeAccountId;
+    // }
+// -----------------------------------------------------------------------
     // 5. Create Stripe onboarding link
-    const accountLink = await stripe.accountLinks.create({
-      account: stripeAccountId,
-      refresh_url: "https://yourdomain.com/stripe/refresh", // Replace with real route
-      return_url: "https://yourdomain.com/dashboard",       // Replace with real route
-      type: "account_onboarding",
-    });
+    // const accountLink = await stripe.accountLinks.create({
+    //   account: stripeAccountId,
+    //   refresh_url: "https://yourdomain.com/stripe/refresh", // Replace with real route
+    //   return_url: "https://yourdomain.com/dashboard",       // Replace with real route
+    //   type: "account_onboarding",
+    // });
 
     // console.log("✅ Onboarding link created:", accountLink.url);
 
@@ -248,25 +248,8 @@ const html = `
                 We're thrilled to have you join our community of passionate educators who are making a difference in learning.
             </p>
             
-            <p style="font-size: 16px; color: #2c3e50; margin-bottom: 32px; line-height: 1.7;">
-                To get started and begin receiving payments for your courses, please complete your Stripe onboarding process:
-            </p>
-            
-            <!-- CTA Button Section -->
-            <div style="text-align: center; margin: 40px 0;">
-                <a href="${accountLink.url}" style="display: inline-block; background: linear-gradient(135deg, #f2c078 0%, #b4c0b2 100%); color: #2c3e50; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 16px; box-shadow: 0 8px 25px rgba(242, 192, 120, 0.3); text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease;">
-                    Complete Onboarding
-                </a>
-            </div>
-            
-            <!-- URL Section -->
-            <div style="background: #faf3dd; padding: 20px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #f2c078;">
-                <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 8px; font-weight: 500;">If the button doesn't work, copy and paste this URL into your browser:</div>
-                <div style="font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 14px; color: #2c3e50; background: #ffffff; padding: 12px; border-radius: 8px; word-break: break-all; border: 1px solid #e8e8e8;">${accountLink.url}</div>
-            </div>
-            
             <p style="font-size: 16px; color: #2c3e50; margin: 30px 0; text-align: center; font-weight: 500;">
-                🚀 We're excited to see the amazing courses you'll create!
+                🚀 We're excited to see the amazing session you'll provide!
             </p>
             
             <!-- Signature -->

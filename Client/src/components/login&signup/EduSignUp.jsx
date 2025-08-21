@@ -590,7 +590,7 @@ const onSubmit = async (data) => {
         )}
       </div>
 
-{(serviceType === "Paid" || serviceType === "Both" || serviceType === "Free") && (
+{/* {(serviceType === "Paid" || serviceType === "Both" || serviceType === "Free") && (
         <div>
         <label className="block font-medium text-sm w-full text-start ">
           Enter Your Payout Method
@@ -646,7 +646,7 @@ const onSubmit = async (data) => {
       )}
     </div>
   </>
-)}
+)} */}
       
                 {/* Password */}
                 <div>

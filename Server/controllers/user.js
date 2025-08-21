@@ -102,7 +102,7 @@ export async function registerLearnerController(request, response) {
   }
 }
 
-export async function registerEducatorController(request, response) { try { const { name, email, password, role, subrole, country, language, phone, dob, address, bio, experience, subjects, serviceType, sessionfee, payoutMethod, upiId, bankAccount, ifscCode, paypalEmail, otherPayout, documentUrl, videoUrl, profileUrl, terms1, terms2, terms3, terms4, terms5, } = request.body;
+export async function registerEducatorController(request, response) { try { const { name, email, password, role, subrole, country, language, phone, dob, address, bio, experience, subjects, serviceType, sessionfee,  documentUrl, videoUrl, profileUrl, terms1, terms2, terms3, terms4, terms5, } = request.body;
 
 // console.log("Received payload:", request.body);
 
@@ -139,37 +139,37 @@ if (!terms1 || !terms2 || !terms3 || !terms4 || !terms5) {
   });
 }
 
-if (payoutMethod === "upi" && !upiId) {
-  return response.status(400).json({
-    message: "UPI ID is required",
-    error: true,
-    success: false,
-  });
-}
+// if (payoutMethod === "upi" && !upiId) {
+//   return response.status(400).json({
+//     message: "UPI ID is required",
+//     error: true,
+//     success: false,
+//   });
+// }
 
-if (payoutMethod === "bank" && (!bankAccount || !ifscCode)) {
-  return response.status(400).json({
-    message: "Bank account and IFSC code are required",
-    error: true,
-    success: false,
-  });
-}
+// if (payoutMethod === "bank" && (!bankAccount || !ifscCode)) {
+//   return response.status(400).json({
+//     message: "Bank account and IFSC code are required",
+//     error: true,
+//     success: false,
+//   });
+// }
 
-if (payoutMethod === "paypal" && !paypalEmail) {
-  return response.status(400).json({
-    message: "PayPal email is required",
-    error: true,
-    success: false,
-  });
-}
+// if (payoutMethod === "paypal" && !paypalEmail) {
+//   return response.status(400).json({
+//     message: "PayPal email is required",
+//     error: true,
+//     success: false,
+//   });
+// }
 
-if (payoutMethod === "other" && !otherPayout) {
-  return response.status(400).json({
-    message: "Other payout method details are required",
-    error: true,
-    success: false,
-  });
-}
+// if (payoutMethod === "other" && !otherPayout) {
+//   return response.status(400).json({
+//     message: "Other payout method details are required",
+//     error: true,
+//     success: false,
+//   });
+// }
 
 const normalizedEmail = email.toLowerCase();
 const existingUser = await EducatorUserModel.findOne({ email: normalizedEmail });
@@ -200,12 +200,12 @@ const newUser = new EducatorUserModel({
   subjects,
   serviceType,
   sessionfee,
-  payoutMethod,
-  upiId,
-  bankAccount,
-  ifscCode,
-  paypalEmail,
-  otherPayout,
+  // payoutMethod,
+  // upiId,
+  // bankAccount,
+  // ifscCode,
+  // paypalEmail,
+  // otherPayout,
   documentUrl,
   videoUrl,
   profileUrl,
