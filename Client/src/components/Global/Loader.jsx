@@ -2,7 +2,7 @@ import React from 'react'
 
 const Loader = () => {
   return (
-    <div className="fixed top-0 flex items-center justify-center min-h-screen bg-black/40 z-50 w-full">
+    <div className="fixed top-0 flex items-center justify-center min-h-screen  z-50 w-full">
       <div className="relative">
         {/* Outer ring */}
         <div className="w-20 h-20 border-4 border-orange-100 border-t-rose-300 rounded-full animate-spin"></div>

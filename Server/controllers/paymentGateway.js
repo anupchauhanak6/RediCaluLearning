@@ -107,7 +107,7 @@ console.log('sessionId:', sessionId);
 
   try {
     const record = await PaymentRecord.findOne({ stripeSessionId: sessionId });
-console.log(record);
+console.log('record' , record);
 
     if (!record) {
       return res.status(404).json({ message: "Payment record not found" });

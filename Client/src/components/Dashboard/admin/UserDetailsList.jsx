@@ -1,54 +1,37 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Mail, Phone, Calendar, Globe, Shield, Ban, ShieldCheck, ExternalLink, Clock, MapPin, BookOpen, Award, Users, Star } from 'lucide-react';
 import API from '../../../common/apis/ServerBaseURL';
 import axios from 'axios';
 
-const UserDetails = ({ userEmail , role }) => {
+const UserDetails = ({ userEmail, role }) => {
   const [user, setUserData] = useState({});
 
-  const fetchUserData = async (userEmail , role) => {
-    console.log("cfhgjbkl role log",userEmail ,   role);
-    
+  const fetchUserData = async (userEmail, role) => {
     try {
-      if(role === "educator"){
-        const fetchEducatorsDetailedData = async () => {
-          try {
-            const response = await axios.post(API.educatorsDetailedData.url, {email: userEmail, }, {
-              withCredentials:true
-            });
-
-            if (response.status === 200) {
-              setUserData(response.data.data);
-            }
-          } catch (error) {
-            console.error("Error fetching detailed data:", error);
-          }
-        };
-        fetchEducatorsDetailedData();
-      }else{
-        const fetchLearnerDetailedData = async () => {
-          try {
-            const response = await axios.post(API.getlearnerDataDetails.url, {email: userEmail,}, {
-              withCredentials:true
-            });
-
-            if (response.status === 200) {
-              setUserData(response.data.data);
-            }
-          } catch (error) {
-            console.error("Error fetching detailed data:", error);
-          }
-        };
-        fetchLearnerDetailedData();
+      if (role === "educator") {
+        const response = await axios.post(API.educatorsDetailedData.url, { email: userEmail }, {
+          withCredentials: true
+        });
+        if (response.status === 200) {
+          setUserData(response.data.data);
+        }
+      } else {
+        const response = await axios.post(API.getlearnerDataDetails.url, { email: userEmail }, {
+          withCredentials: true
+        });
+        if (response.status === 200) {
+          setUserData(response.data.data);
+        }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching detailed data:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUserData(userEmail , role)
-  },[])
+    fetchUserData(userEmail, role);
+    // eslint-disable-next-line
+  }, []);
 
   if (!user || Object.keys(user).length === 0) {
     return (
@@ -62,19 +45,19 @@ const UserDetails = ({ userEmail , role }) => {
     );
   }
 
-  const handleSuspendUser = async() => {
+  const handleSuspendUser = async () => {
     try {
-      const response = await axios.post(API.suspendUser.url, {role:user.role , _id:user._id},
-      {withCredentials:true}
-      )
+      const response = await axios.post(API.suspendUser.url, { role: user.role, _id: user._id },
+        { withCredentials: true }
+      );
       if (response.status === 200) {
         const updatedUser = response.data.data;
-        console.log("Updated user data:", updatedUser);
+        setUserData(updatedUser); // update user state if suspension status changes
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const getFieldIcon = (key) => {
     const iconMap = {
@@ -97,7 +80,6 @@ const UserDetails = ({ userEmail , role }) => {
       students: Users,
       default: User
     };
-
     const IconComponent = iconMap[key.toLowerCase()] || iconMap.default;
     return <IconComponent className="w-4 h-4" />;
   };
@@ -112,127 +94,144 @@ const UserDetails = ({ userEmail , role }) => {
     return 'bg-amber-50 text-amber-800 border-amber-200';
   };
 
+  // Helper: What property to show for object arrays? Customize as needed:
+  const renderObjectItem = (item) => {
+    if (!item || typeof item !== "object") return String(item || "N/A");
+    if ('text' in item) return item.text;
+    if ('name' in item) return item.name;
+    if ('title' in item) return item.title;
+    if ('email' in item) return item.email;
+    return JSON.stringify(item);
+  };
+
   return (
-    <div className="p-6 w-full max-w-5xl mx-auto">
-      <div className="rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-amber-50 via-yellow-50 to-green-50 border-2 border-amber-200">
-        {/* Header */}
-        <div className="px-8 py-6 bg-gradient-to-r from-amber-100 to-green-100 border-b-2 border-amber-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-200 to-green-200 flex items-center justify-center mr-4 shadow-lg">
-                <User className="w-6 h-6 text-amber-700" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                  User Details
-                </h2>
-                <p className="text-gray-600 text-sm mt-1">Comprehensive user information</p>
-              </div>
+    <div className="p-6 w-full max-w-5xl mx-auto h-[100vh]">
+      {/* Header */}
+      <div className="px-8 py-6 bg-gradient-to-r from-amber-100 to-green-100 border-b-2 border-amber-200 rounded-t-3xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-200 to-green-200 flex items-center justify-center mr-4 shadow-lg">
+              <User className="w-6 h-6 text-amber-700" />
             </div>
-            
-            <button 
-              onClick={handleSuspendUser} 
-              className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                user.suspended === "YES" 
-                  ? 'bg-green-500 hover:bg-green-600 text-white' 
-                  : 'bg-red-500 hover:bg-red-600 text-white'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                {user.suspended === "YES" ? <ShieldCheck className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
-                {user.suspended === "YES" ? 'Unsuspend User' : 'Suspend User'}
-              </div>
-            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                User Details
+              </h2>
+              <p className="text-gray-600 text-sm mt-1">Comprehensive user information</p>
+            </div>
           </div>
-        </div>
-        
-        {/* Content */}
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(user).map(([key, value]) => {
-              if (key === 'password' || key === 'otp') return null;
-              
-              let displayValue;
 
-              if (Array.isArray(value)) {
-                displayValue = value.length ? (
-                  <div className="flex flex-wrap gap-2">
-                    {value.map((item, index) => (
-                      <span key={index} className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium border border-amber-200">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-gray-500 italic">No items</span>
-                );
-              } else if (typeof value === 'boolean') {
-                displayValue = (
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(key, value)}`}>
-                    {value ? 'Yes' : 'No'}
-                  </span>
-                );
-              } else if (typeof value === 'string' && value.startsWith('http')) {
-                displayValue = (
-                  <a
-                    href={value}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-amber-600 hover:text-amber-700 underline decoration-2 underline-offset-2 transition-colors flex items-center gap-1 group"
-                  >
-                    <span className="truncate max-w-xs">{value}</span>
-                    <ExternalLink className="w-3 h-3 group-hover:scale-110 transition-transform" />
-                  </a>
-                );
-              } else if (typeof value === 'object' && value !== null) {
-                if (value.day && value.month && value.year) {
-                  displayValue = (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span className="font-medium">{value.day}/{value.month}/{value.year}</span>
+          <button
+            onClick={handleSuspendUser}
+            className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+              user.suspended === "YES"
+                ? 'bg-green-500 hover:bg-green-600 text-white'
+                : 'bg-red-500 hover:bg-red-600 text-white'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {user.suspended === "YES" ? <ShieldCheck className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+              {user.suspended === "YES" ? 'Unsuspend User' : 'Suspend User'}
+            </div>
+          </button>
+        </div>
+      </div>
+      <div className='h-[80vh] overflow-y-scroll'>
+        <div className="overflow-hidden shadow-2xl bg-gradient-to-br from-amber-50 via-yellow-50 to-green-50 border-2 border-amber-200">
+          {/* Content */}
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Object.entries(user).map(([key, value]) => {
+                if (key === 'password' || key === 'otp') return null;
+
+                let displayValue;
+                // Array (could be of primitives or objects)
+                if (Array.isArray(value)) {
+                  // Filter out null or undefined items before rendering
+                  const safeArrayItems = value.filter(item => item != null);
+                  displayValue = safeArrayItems.length ? (
+                    <div className="flex flex-wrap gap-2">
+                      {safeArrayItems.map((item, index) => (
+                        <span key={(item && item._id) || index}
+                          className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium border border-amber-200">
+                          {renderObjectItem(item)}
+                        </span>
+                      ))}
                     </div>
+                  ) : (
+                    <span className="text-gray-500 italic">No items</span>
                   );
+                } else if (typeof value === 'boolean') {
+                  displayValue = (
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(key, value)}`}>
+                      {value ? 'Yes' : 'No'}
+                    </span>
+                  );
+                } else if (typeof value === 'string' && value.startsWith('http')) {
+                  displayValue = (
+                    <a
+                      href={value}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-600 hover:text-amber-700 underline decoration-2 underline-offset-2 transition-colors flex items-center gap-1 group"
+                    >
+                      <span className="truncate max-w-xs">{value}</span>
+                      <ExternalLink className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                    </a>
+                  );
+                } else if (typeof value === 'object' && value !== null) {
+                  // Common date format
+                  if (value.day && value.month && value.year) {
+                    displayValue = (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span className="font-medium">{value.day}/{value.month}/{value.year}</span>
+                      </div>
+                    );
+                  } else {
+                    // fallback: show JSON object pretty
+                    displayValue = (
+                      <pre className="text-sm bg-gray-100 p-2 rounded-lg overflow-x-auto">
+                        {JSON.stringify(value, null, 2)}
+                      </pre>
+                    );
+                  }
                 } else {
-                  displayValue = (
-                    <pre className="text-sm bg-gray-100 p-2 rounded-lg overflow-x-auto">
-                      {JSON.stringify(value, null, 2)}
-                    </pre>
-                  );
+                  displayValue = value !== undefined && value !== null && value !== "" 
+                    ? value 
+                    : <span className="text-gray-500 italic">Not provided</span>;
                 }
-              } else {
-                displayValue = value || <span className="text-gray-500 italic">Not provided</span>;
-              }
 
-              const formattedKey = key
-                .replace(/([A-Z])/g, ' $1')
-                .replace(/^./, str => str.toUpperCase());
+                const formattedKey = key
+                  .replace(/([A-Z])/g, ' $1')
+                  .replace(/^./, str => str.toUpperCase());
 
-              return (
-                <div key={key} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border-2 border-amber-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-200 to-green-200 flex items-center justify-center">
-                      {getFieldIcon(key)}
+                return (
+                  <div key={key} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border-2 border-amber-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-200 to-green-200 flex items-center justify-center">
+                        {getFieldIcon(key)}
+                      </div>
+                      <div className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                        {formattedKey}
+                      </div>
                     </div>
-                    <div className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                      {formattedKey}
+                    <div className="text-gray-800 font-medium text-lg leading-relaxed">
+                      {displayValue}
                     </div>
                   </div>
-                  <div className="text-gray-800 font-medium text-lg leading-relaxed">
-                    {displayValue}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="px-8 py-4 bg-gradient-to-r from-amber-100 to-green-100 border-t-2 border-amber-200">
-          <div className="flex items-center justify-center">
-            <div className="flex items-center gap-2 text-gray-600 text-sm">
-              <Clock className="w-4 h-4" />
-              <span>Last updated: {new Date().toLocaleDateString()}</span>
-            </div>
+      </div>
+      {/* Footer */}
+      <div className="px-8 py-4 bg-gradient-to-r from-amber-100 to-green-100 border-t-2 border-amber-200 rounded-b-3xl">
+        <div className="flex items-center justify-center">
+          <div className="flex items-center gap-2 text-gray-600 text-sm">
+            <Clock className="w-4 h-4" />
+            <span>Last updated: {new Date().toLocaleDateString()}</span>
           </div>
         </div>
       </div>

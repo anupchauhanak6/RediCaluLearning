@@ -324,10 +324,11 @@ const onSubmit = async (data) => {
 </div>
 
 {/* Date of Birth */}
-<div className="mt-2 grid grid-cols-3 gap-2">
-  <div>
-    <label className="block text-sm  font-medium">Day</label>
-    <div className="bg-[#868674] px-4 py-3 rounded-lg border border-[#1e2a48] focus-within:border-blue-500">
+<div className="">
+   <label className="block text-sm text-start font-medium">DOB</label>
+  <div className="mt-2 grid grid-cols-3 gap-2">
+    
+      <div className="bg-[#868674] px-4 py-3 rounded-lg border border-[#1e2a48] focus-within:border-blue-500">
       <input
         {...register("dob.day", { required: true })}
         type="number"
@@ -337,9 +338,7 @@ const onSubmit = async (data) => {
         className="bg-transparent outline-none w-full  anta-regular"
       />
     </div>
-  </div>
-  <div>
-    <label className="block text-sm  font-medium">Month</label>
+
     <div className="bg-[#868674] px-4 py-3 rounded-lg border border-[#1e2a48] focus-within:border-blue-500">
       <input
         {...register("dob.month", { required: true })}
@@ -350,9 +349,7 @@ const onSubmit = async (data) => {
         className="bg-transparent outline-none w-full  anta-regular"
       />
     </div>
-  </div>
-  <div>
-    <label className="block text-sm  font-medium">Year</label>
+ 
     <div className="bg-[#868674] px-4 py-3 rounded-lg border border-[#1e2a48] focus-within:border-blue-500">
       <input
         {...register("dob.year", { required: true })}
@@ -362,7 +359,8 @@ const onSubmit = async (data) => {
       />
     </div>
   </div>
-</div>
+  </div>
+
 
 {/* Address Line 1 */}
 <div className="mt-2">

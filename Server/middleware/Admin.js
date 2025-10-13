@@ -22,8 +22,19 @@ export const admin = async(request,response,next)=>{
        next()
 
     } catch (error) {
+      
+        
+      if(error.message == 'jwt expired'){
+          return response.status(500).json({
+            message : "Access token expired, please login again",
+            error:error,
+            error : true,
+            success : false
+        })
+      }
         return response.status(500).json({
             message : "Permission denial",
+            error:error,
             error : true,
             success : false
         })

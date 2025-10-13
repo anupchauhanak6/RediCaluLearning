@@ -416,6 +416,9 @@ export async function signin(request, response) {
       });
     }
 
+    console.log(user);
+    
+
     if (!user) {
       return response.status(404).json({
         message: "No user found",
@@ -453,7 +456,7 @@ export async function signin(request, response) {
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       {
-        expiresIn: "8h",
+        expiresIn: "7d",
       }
     );
     const refreshToken = jwt.sign(
@@ -666,7 +669,7 @@ export async function addtodos(req, res) {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Access token expired", success: false, error: true });
+      return res.status(401).json({ message: "Access token expired, please login again.", success: false, error: true });
     }
     return res.status(403).json({ message: "Invalid access token", success: false, error: true });
   }
@@ -722,7 +725,7 @@ export async function fetchtodos(req, res) {
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return res.status(401).json({
-        message: "Access token expired",
+        message: "Access token expired, please login again",
         success: false,
         error: true,
       });
@@ -768,7 +771,7 @@ export async function deletetodos(req, res) {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Access token expired", success: false, error: true });
+      return res.status(401).json({ message: "Access token expired, please login again", success: false, error: true });
     }
     return res.status(403).json({ message: "Invalid access token", success: false, error: true });
   }
@@ -815,7 +818,7 @@ export async function toggleTodoComplete(req, res) {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Access token expired", success: false, error: true });
+      return res.status(401).json({ message: "Access token expired, please login again", success: false, error: true });
     }
     return res.status(403).json({ message: "Invalid access token", success: false, error: true });
   }
@@ -866,7 +869,7 @@ export async function getEducatorSessions(req, res) {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     return res.status(err.name === "TokenExpiredError" ? 401 : 403).json({
-      message: err.name === "TokenExpiredError" ? "Token expired" : "Invalid token",
+      message: err.name === "TokenExpiredError" ? "Access token expired, please login again" : "Invalid token",
       success: false,
       error: true
     });
@@ -1019,7 +1022,7 @@ export async function fetchWalletAmount(req, res) {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     return res.status(403).json({
-      message: err.name === "TokenExpiredError" ? "Token expired" : "Invalid token",
+      message: err.name === "TokenExpiredError" ? "Access token expired, please login again" : "Invalid token",
       error: true,
       success: false,
     });

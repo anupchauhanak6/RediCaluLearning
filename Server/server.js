@@ -24,7 +24,7 @@ app.use(cookieParser());
 // 4. Middleware
 app.use(cors({
   credentials: true,
-  origin: ["http://localhost:5173", "http://localhost:4173", "https://dev.radical-unlearning.com"]
+  origin: ["http://localhost:5173", "http://localhost:4173", "https://radical-unlearning.com"]
 }));
 app.post('/api/pay/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 

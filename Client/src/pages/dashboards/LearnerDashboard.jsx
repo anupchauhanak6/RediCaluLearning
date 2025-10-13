@@ -39,12 +39,14 @@ import { clearUser } from "../../store/slices/userSlice.jsx";
 import axios from "axios";
 import AIChat from "../../components/ChatBot/Aichat.jsx";
 import { loadStripe } from "@stripe/stripe-js";
-const stripePromise = loadStripe("pk_test_51RPi0BI60AmMhjB7QXOsnO1d7vsWW7XVoYZnDe4Al7ZoQ7PIgSBdF1l9SE5AekRVZQ1LIFlebCoyrfvFF1vqqgsw00tA0b6Wy1");
+const stripePromise = loadStripe("pk_test_51ReIOAG29xGWG9CnT01F3xstpqxHMWQ7zbh73TpFEty5HfHJw7REQGahb6YThMmEGbR52HDV14k0H8kg9tDLNlqJ007JJUN5ok");
 
 import API from "../../common/apis/ServerBaseURL.jsx";
 import TodoApp from "../../components/Dashboard/TodoApp.jsx";
 import { Link } from "react-router-dom";
-import { showNetworkErrorToast } from "../../utils/Notification.jsx";
+import { showErrorToast, showNetworkErrorToast } from "../../utils/Notification.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // Dummy data for development
 const dummyUser = {
   name: "Alex Thompson",
@@ -89,7 +91,8 @@ const OverviewTab = ({ darkMode, sessions }) => {
       }
     } catch (error) {
       console.error("Error fetching todos:", error);
-      setError("Failed to load todos.");
+      showErrorToast('Failed to load todos.')
+      showErrorToast(error.response.data.message)
        if (error.message === "Network Error") {
               showNetworkErrorToast(
                 "Your Network connection Is Unstable OR Disconected"
@@ -259,7 +262,7 @@ const SearchTab = ({ darkMode, userData }) => {
                   <div className="flex-shrink-0 mr-4">
                     <div className="rounded-full h-16 w-16 overflow-hidden border-2 border-white shadow-md bg-white flex items-center justify-center">
                       <img
-                        src="https://amarjha.tech/assets/MyImg-BjWvYtsb.svg"
+                        src={educator.avatar || '/Sample_User_Icon.png'}
                         alt={educator.name}
                         className="h-12 w-12 object-cover"
                       />
@@ -661,6 +664,7 @@ const handleProfileUpdate = async (e) => {
     console.log(response);
     setEditProfile(false);
   } catch (error) {
+    showErrorToast(error.response.data.message)
     console.error("Update failed:", error);
      if (error.message === "Network Error") {
         showNetworkErrorToast(
@@ -957,6 +961,17 @@ const LearnerDashboard = () => {
   };
   return (
     <div className={`min-h-screen  text-gray-800`}>
+      <ToastContainer
+  position="top-right"
+  autoClose={4000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  pauseOnHover
+/>
       {/* Mobile Sidebar Toggle */}
       <div className="md:hidden p-4 flex justify-between items-center  text-black">
         <h1 className="font-bold ">Radical Unlearning</h1>
@@ -992,7 +1007,7 @@ const LearnerDashboard = () => {
             <img
               src={
                 profileData?.avatar ||
-                "https://amarjha.tech/assets/MyImg-BjWvYtsb.svg"
+                "/Sample_User_Icon.png"
               }
               alt="User Avatar"
               className="w-10 h-10 rounded-full mr-3"

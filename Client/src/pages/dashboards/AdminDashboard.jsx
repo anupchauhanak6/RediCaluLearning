@@ -259,8 +259,9 @@ const getWithdrawelRequests = async() =>{
       }
            {
       viewUserDetails && (
-        <div className={` w-[100vw] absolute z-50  flex justify-center`}><UserDetailsList userEmail={email} role={role}/>
-        <span onClick={()=>{setViewUserDetails(false)}} className=' text-black absolute right-5 text-3xl top-0 cursor-pointer'>X</span>
+        <div className={` w-full 2xl:w-[80%]  absolute z-50  flex justify-center`}>
+          <UserDetailsList userEmail={email} role={role}/>
+        <span onClick={()=>{setViewUserDetails(false)}} className=' text-black absolute right-10 text-3xl top-5 cursor-pointer'>X</span>
         </div>
       )
      }

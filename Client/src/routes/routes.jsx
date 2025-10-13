@@ -15,6 +15,7 @@ import Contact from '../pages/Contact.jsx'
 import User from '../pages/User.jsx'
 import TopBar from '../components/Dashboard/admin/TopBar.jsx';
 import SchedulePage from '../pages/SchedulePage/SchedulePage.jsx';
+import PaymentCancelled from '../pages/PaymentCancelled.jsx';
 const routes = createBrowserRouter(
     [
         {
@@ -85,6 +86,13 @@ const routes = createBrowserRouter(
           path: 'schedule',
           element: (
               <SchedulePage />
+
+          )
+        },
+        {
+          path: 'cancel',
+          element: (
+              <PaymentCancelled />
 
           )
         }

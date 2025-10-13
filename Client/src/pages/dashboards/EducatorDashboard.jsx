@@ -22,7 +22,7 @@ import EducatorWallet from "../../components/Dashboard/Educator/EducatorWallet.j
 import AIChat from "../../components/ChatBot/Aichat.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { showNetworkErrorToast } from "../../utils/Notification.jsx";
+import { showErrorToast, showNetworkErrorToast } from "../../utils/Notification.jsx";
 // Main Component
 export default function EducatorDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -115,7 +115,7 @@ export default function EducatorDashboard() {
       confirmPassword: "",
     });
   };
-  const [editProfile, setEditProfile] = useState(false);
+  const [editProfile, setEditProfile] = useState(true);
   const [changedData, setChangedData] = useState({});
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
@@ -202,6 +202,7 @@ export default function EducatorDashboard() {
         const walletAmount = response?.data?.data;
         setWalletAmount(walletAmount);
       } catch (error) {
+        showErrorToast(error.response.data.message)
         if (err.message === "Network Error") {
         showNetworkErrorToast(
           "Your Network connection Is Unstable OR Disconected"
