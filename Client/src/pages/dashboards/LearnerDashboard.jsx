@@ -35,7 +35,7 @@ import { CiChat1, CiMenuFries, CiLock } from "react-icons/ci";
 import { TbUserSearch } from "react-icons/tb";
 import { MdOutlineSearch } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
-import { clearUser } from "../../store/slices/userSlice.jsx";
+import { clearUser , updateUser} from "../../store/slices/userSlice.jsx";
 import axios from "axios";
 import AIChat from "../../components/ChatBot/Aichat.jsx";
 import { loadStripe } from "@stripe/stripe-js";
@@ -44,7 +44,7 @@ const stripePromise = loadStripe("pk_test_51ReIOAG29xGWG9CnT01F3xstpqxHMWQ7zbh73
 import API from "../../common/apis/ServerBaseURL.jsx";
 import TodoApp from "../../components/Dashboard/TodoApp.jsx";
 import { Link } from "react-router-dom";
-import { showErrorToast, showNetworkErrorToast } from "../../utils/Notification.jsx";
+import { showErrorToast, showNetworkErrorToast,showSuccessToast } from "../../utils/Notification.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Dummy data for development
@@ -615,6 +615,7 @@ const SettingsTab = ({ userData }) => {
   const [changedData, setChangedData] = useState({});
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+   const dispatch = useDispatch();
 
  const handleImageUpload = async (file) => {
   const formData = new FormData();
@@ -645,32 +646,41 @@ const handleProfileUpdate = async (e) => {
 
   let updatedData = { ...changedData };
 
- if (file) {
-  const imageUrl = await handleImageUpload(file);
-  if (imageUrl) {
-    updatedData.avatar = imageUrl;
+  if (file) {
+    const imageUrl = await handleImageUpload(file);
+    if (imageUrl) {
+      updatedData.avatar = imageUrl;
+    }
+    setFile(null); 
   }
-  setFile(null); 
-}
-
 
   try {
-    const response = await axios.patch(
+    const response = await axios. patch(
       API.updateUserDetails.url,
       updatedData,
       { withCredentials: true }
     );
 
-    console.log(response);
-    setEditProfile(false);
+    // ✅ YE CHANGES ADD KIYE
+    if (response.status === 200) {
+      // Redux store update karo
+      dispatch(updateUser(updatedData));
+      
+      // Local state reset karo
+      setChangedData({});
+      setEditProfile(false);
+      
+      showSuccessToast("Profile updated successfully!");
+    }
+    
   } catch (error) {
-    showErrorToast(error.response.data.message)
+    showErrorToast(error.response?. data?.message || "Update failed")
     console.error("Update failed:", error);
-     if (error.message === "Network Error") {
-        showNetworkErrorToast(
-          "Your Network connection Is Unstable OR Disconected"
-        );
-      }
+    if (error.message === "Network Error") {
+      showNetworkErrorToast(
+        "Your Network connection Is Unstable OR Disconnected"
+      );
+    }
   } finally {
     setLoading(false);
   }
