@@ -557,14 +557,18 @@ export async function updateUserDetails(req, res) {
         }
       );
     } else if (role === "EDUCATOR") {
-      const { bio, experience, avatar } = req.body;
+      const { name, bio, experience, avatar, subrole, language, serviceType } = req.body;
 
       updateUser = await EducatorUserModel.updateOne(
         { _id: userId },
         {
+          ...(name && { name }),
           ...(bio && { bio }),
           ...(experience && { experience }),
           ...(avatar && { avatar }),
+          ...(subrole && { subrole }),
+          ...(language && { language }),
+          ...(serviceType && { serviceType }),
         }
       );
     }
