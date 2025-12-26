@@ -24,8 +24,7 @@ import { IoWalletOutline } from "react-icons/io5";
 import {FaUserEdit } from 'react-icons/fa';
 import axios from "axios";
 import API from "../../common/apis/ServerBaseURL.jsx";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { clearUser, updateUser } from "../../store/slices/userSlice.jsx";
 import GroupChat from "../../components/Chat/GroupChat.jsx";
 import { MdHome } from "react-icons/md";
@@ -42,7 +41,7 @@ export default function EducatorDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [viewMode, setViewMode] = useState("list"); // list or calendar
+  const [viewMode, setViewMode] = useState("list"); 
   const [profileData, setProfileData] = useState({});
   const [sessions, setSessions] = useState({previous:[],upcoming:[]});
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -56,7 +55,7 @@ export default function EducatorDashboard() {
   if (user?. userData?.user) {
     setProfileData(user.userData.user);
   }
-}, [user]); // ✅ Add [user] dependency
+}, [user]); 
   
   useEffect(()=>{
     const getEducatorSessions = async () =>{
@@ -188,16 +187,62 @@ const [editProfile, setEditProfile] = useState(false);
   };
 
 
-    const [sessionFee, setSessionFee] = useState("1000");
+  const [sessionFee, setSessionFee] = useState('1000');
   const [isEditing, setIsEditing] = useState(false);
   const [tempFee, setTempFee] = useState(sessionFee);
 
-  const handleSave = () => {
-    if (!isNaN(tempFee) && tempFee.trim() !== "") {
-      setSessionFee(tempFee);
-      setIsEditing(false);
+  
+  useEffect(() => {
+    console.log("Full Profile Data:", profileData);
+
+    if (profileData) {
+      const backendFee = profileData.sessionfee;
+      const frontendFee = profileData.sessionFee;
+
+      const finalFee = backendFee !== undefined ? backendFee : frontendFee;
+
+      console.log("Backend Fee Key (small f):", backendFee);
+      console.log("Frontend Fee Key (Big F):", frontendFee);
+      console.log("Final Fee used:", finalFee);
+
+      if (finalFee !== undefined && finalFee !== null) {
+        setSessionFee(String(finalFee));
+        setTempFee(String(finalFee));
+      }
     }
-  };
+  }, [profileData]);
+
+  const handleSave = async () => {
+  if (!isNaN(tempFee) && tempFee.toString().trim() !== "") {
+    
+    try {
+      const feePayload = { sessionfee: Number(tempFee) }; 
+
+      const response = await axios.patch(
+        API.updateUserDetails.url, 
+        feePayload,
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        dispatch(updateUser({ 
+            sessionfee: Number(tempFee), 
+            sessionFee: tempFee          
+        })); 
+        
+        setSessionFee(tempFee); 
+        setIsEditing(false);
+        
+        showSuccessToast("Session fee updated successfully!");
+      }
+    } catch (error) {
+      console.error("Fee update failed:", error);
+      showErrorToast(error.response?.data?.message || "Failed to update fee");
+    }
+  } else {
+    showErrorToast("Please enter a valid amount.");
+  }
+};
 
 const fetchWalletAmount = async() =>{
   try {

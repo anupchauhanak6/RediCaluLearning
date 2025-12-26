@@ -554,10 +554,11 @@ export async function updateUserDetails(req, res) {
           ...(language && { language }),
           ...(bio && { bio }),
           ...(avatar && { avatar }),
-        }
+        },
+        { new: true }
       );
     } else if (role === "EDUCATOR") {
-      const { name, bio, experience, avatar, subrole, language, serviceType } = req.body;
+      const { name, bio, experience, avatar, subrole, language, serviceType, sessionfee } = req.body;
 
       updateUser = await EducatorUserModel.updateOne(
         { _id: userId },
@@ -569,8 +570,16 @@ export async function updateUserDetails(req, res) {
           ...(subrole && { subrole }),
           ...(language && { language }),
           ...(serviceType && { serviceType }),
-        }
+          ...(sessionfee && { sessionfee: Number(sessionfee) }),
+        },
+        { new: true }
       );
+      if (sessionfee) {
+        await SessionModel.updateMany(
+          { educatorId: userId }, 
+          { $set: { sessionfee: Number(sessionfee) } },
+        );
+      }
     }
 
     return res.status(200).json({
