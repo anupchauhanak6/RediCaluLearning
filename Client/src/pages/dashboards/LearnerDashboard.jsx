@@ -661,12 +661,12 @@ const handleProfileUpdate = async (e) => {
       { withCredentials: true }
     );
 
-    // ✅ YE CHANGES ADD KIYE
+    
     if (response.status === 200) {
-      // Redux store update karo
+      // Redux store update
       dispatch(updateUser(updatedData));
       
-      // Local state reset karo
+      // Local state reset 
       setChangedData({});
       setEditProfile(false);
       
