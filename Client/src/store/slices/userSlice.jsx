@@ -8,7 +8,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState, 
   reducers: {
-    // ✅ SMART LOGIN REDUCER (Fix for "Data Nahi Aa Raha")
     userinfo(state, action) {
       // Check karte hain ki data nested hai ya nahi
       if (action.payload && action.payload.userData) {
@@ -32,7 +31,6 @@ export const userSlice = createSlice({
       }
     },
 
-    // ✅ PROFILE UPDATE REDUCER
     updateUser(state, action) {
       // Check ki data exist karta hai
       if (state.userData && state.userData.user) {
@@ -46,7 +44,6 @@ export const userSlice = createSlice({
   }
 });
 
-// ✅ Export all actions properly
 export const { userinfo, clearUser, updateTheme, updateUser } = userSlice.actions;
 
 export default userSlice.reducer;

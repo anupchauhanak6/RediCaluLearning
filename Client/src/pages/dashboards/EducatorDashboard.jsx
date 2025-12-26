@@ -35,6 +35,8 @@ import EducatorWallet from "../../components/Dashboard/Educator/EducatorWallet.j
 import AIChat from '../../components/ChatBot/Aichat.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { showErrorToast, showNetworkErrorToast, showSuccessToast } from "../../utils/Notification.jsx";
+import React from "react";
 // Main Component
 export default function EducatorDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -158,18 +160,23 @@ const [editProfile, setEditProfile] = useState(false);
       );
 
       if (response.status === 200) {
-        // ✅ Yahan Redux Store update karna zaroori hai
+        
         dispatch(updateUser(updatedData)); 
         
         setProfileData((prev) => ({ ...prev, ...updatedData }));
         setChangedData({});
         setEditProfile(false);
-        alert("Profile updated successfully!");
+        showSuccessToast("Profile updated successfully!");
       }
       
     } catch (error) {
+      showErrorToast(error.response?. data?.message || "Update failed")
       console.error("Update failed:", error);
-      alert("Failed to update profile. Please try again.");
+      if (error.message === "Network Error") {
+        showNetworkErrorToast(
+          "Your Network connection Is Unstable OR Disconnected"
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -844,7 +851,6 @@ const fetchWalletAmount = async() =>{
             </div>
 
             {/* Subrole */}
-            {/* Subrole - Updated to Select Dropdown */}
             <div>
               <label className="block text-sm font-medium text-black mb-1">
                 Subrole
@@ -870,7 +876,7 @@ const fetchWalletAmount = async() =>{
               </label>
               <input
                 type="text"
-                disabled={!editProfile}
+                disabled
                 value={changedData.country ?? profileData.country}
                 onChange={(e) => handleChange("country", e.target.value)}
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-[#faf3dd] text-black disabled: opacity-50 disabled:cursor-not-allowed"
